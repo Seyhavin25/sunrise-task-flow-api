@@ -4,7 +4,6 @@ import com.chetraseng.sunrise_task_flow_api.dto.TaskRequest;
 import com.chetraseng.sunrise_task_flow_api.dto.TaskResponse;
 import com.chetraseng.sunrise_task_flow_api.services.TaskService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +18,10 @@ public class TaskController {
   private final TaskService taskService;
 
   @GetMapping
-  public List<TaskResponse> getAllTask() {
-    return taskService.findAll();
+  public List<TaskResponse> getAllTask(@RequestParam(required = false) Boolean completed) {
+    return taskService.findAll().stream()
+        .filter(t -> completed == null || completed.equals(t.getCompleted()))
+        .toList();
   }
 
   @GetMapping("/{id}")
@@ -42,7 +43,21 @@ public class TaskController {
           @PathVariable Long id,
           @RequestBody TaskRequest request) {
     Optional<TaskResponse> response = taskService.update(id, request.getTitle(), request.getDescription());
-
     return response.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+  }
+
+  @PatchMapping("/{id}/complete")
+  public ResponseEntity<TaskResponse> completeTask(@PathVariable Long id) {
+    return taskService.complete(id)
+        .map(ResponseEntity::ok)
+        .orElse(ResponseEntity.notFound().build());
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
+    if (taskService.delete(id)) {
+      return ResponseEntity.noContent().build();
+    }
+    return ResponseEntity.notFound().build();
   }
 }

@@ -53,11 +53,18 @@ public class TaskServiceImpl implements TaskService {
 
   @Override
   public Optional<TaskResponse> complete(Long id) {
-    return Optional.empty();
+    Optional<Task> optionalTask = taskRepository.findById(id);
+    if (optionalTask.isEmpty()) {
+      return Optional.empty();
+    }
+    Task task = optionalTask.get();
+    task.setCompleted(true);
+    Task savedTask = taskRepository.save(task);
+    return Optional.of(taskMapper.toTaskResponse(savedTask));
   }
 
   @Override
   public boolean delete(Long id) {
-    return false;
+    return taskRepository.delete(id);
   }
 }
