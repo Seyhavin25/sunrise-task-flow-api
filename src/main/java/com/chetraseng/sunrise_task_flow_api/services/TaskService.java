@@ -1,7 +1,10 @@
 package com.chetraseng.sunrise_task_flow_api.services;
 
 import com.chetraseng.sunrise_task_flow_api.dto.FilterTaskDto;
+import com.chetraseng.sunrise_task_flow_api.dto.Pagination;
 import com.chetraseng.sunrise_task_flow_api.dto.TaskResponse;
+import org.springframework.data.domain.Page;
+
 import java.util.List;
 
 public interface TaskService {
@@ -17,5 +20,5 @@ public interface TaskService {
 
   void delete(Long id);
 
-  List<TaskResponse> filterTask(FilterTaskDto filter);
+  List<TaskResponse> filterTask(FilterTaskDto filter, Pagination pagination);
 }

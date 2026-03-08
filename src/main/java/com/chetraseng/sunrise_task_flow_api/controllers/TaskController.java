@@ -1,14 +1,12 @@
 package com.chetraseng.sunrise_task_flow_api.controllers;
 
-import com.chetraseng.sunrise_task_flow_api.dto.FilterTaskDto;
-import com.chetraseng.sunrise_task_flow_api.dto.TaskRequest;
-import com.chetraseng.sunrise_task_flow_api.dto.TaskResponse;
-import com.chetraseng.sunrise_task_flow_api.dto.TaskSummary;
+import com.chetraseng.sunrise_task_flow_api.dto.*;
 import com.chetraseng.sunrise_task_flow_api.model.TaskModel;
 import com.chetraseng.sunrise_task_flow_api.repository.TaskRepository;
 import com.chetraseng.sunrise_task_flow_api.services.TaskService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/tasks")
 public class TaskController {
   private final TaskService taskService;
-  private final TaskRepository taskRepository;
 
   @GetMapping
   public List<TaskResponse> getAllTask(@RequestParam(required = false) Boolean completed) {
@@ -55,7 +52,7 @@ public class TaskController {
   }
 
   @GetMapping("/filter")
-  public List<TaskResponse> filterTasks(FilterTaskDto filter) {
-    return taskService.filterTask(filter);
+  public PaginationResponse<TaskResponse> filterTasks(FilterTaskDto filter, Pagination pagination) {
+    return new PaginationResponse<>(taskService.filterTask(filter, pagination), pagination);
   }
 }

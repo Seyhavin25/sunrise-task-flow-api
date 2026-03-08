@@ -1,16 +1,20 @@
 package com.chetraseng.sunrise_task_flow_api.services;
 
 import com.chetraseng.sunrise_task_flow_api.dto.FilterTaskDto;
+import com.chetraseng.sunrise_task_flow_api.dto.Pagination;
 import com.chetraseng.sunrise_task_flow_api.dto.TaskResponse;
 import com.chetraseng.sunrise_task_flow_api.exception.ResourceNotFoundException;
 import com.chetraseng.sunrise_task_flow_api.mapper.TaskMapper;
 import com.chetraseng.sunrise_task_flow_api.model.TaskModel;
-import com.chetraseng.sunrise_task_flow_api.repository.LegacyTaskRepository;
 import java.util.List;
 
 import com.chetraseng.sunrise_task_flow_api.repository.TaskRepository;
 import com.chetraseng.sunrise_task_flow_api.spec.TaskSpec;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -73,7 +77,9 @@ public class TaskServiceImpl implements TaskService {
   }
 
   @Override
-  public List<TaskResponse> filterTask(FilterTaskDto filter) {
+  public List<TaskResponse> filterTask(FilterTaskDto filter, Pagination pagination) {
+    Pageable pageable =
+        PageRequest.of(pagination.getPage(), pagination.getSize(), Sort.by("id").descending());
     Specification<TaskModel> spec = Specification.unrestricted();
 
     if (filter.getCompleted() != null) {
@@ -89,6 +95,10 @@ public class TaskServiceImpl implements TaskService {
       spec = spec.and(TaskSpec.afterCreatedAt(filter.getDate()));
     }
 
-    return taskRepository.findAll(spec).stream().map(taskMapper::toTaskResponse).toList();
+    Page<TaskModel> taskPage = taskRepository.findAll(spec, pageable);
+    pagination.setTotalPage(taskPage.getTotalPages());
+    pagination.setTotal(taskPage.getTotalElements());
+
+    return taskPage.getContent().stream().map(taskMapper::toTaskResponse).toList();
   }
 }

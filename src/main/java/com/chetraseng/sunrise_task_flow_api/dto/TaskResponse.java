@@ -14,4 +14,6 @@ public class TaskResponse {
   private String description;
   private Boolean completed;
   private LocalDateTime createdAt;
+  private String projectName;
+  private Long projectId;
 }
