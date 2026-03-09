@@ -1,51 +1,54 @@
 package com.chetraseng.sunrise_task_flow_api.controllers;
 
-import com.chetraseng.sunrise_task_flow_api.dto.TaskRequest;
-import com.chetraseng.sunrise_task_flow_api.dto.TaskResponse;
-import com.chetraseng.sunrise_task_flow_api.services.TaskService;
-import java.util.List;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+// TODO: Add remaining imports as you implement each endpoint
+// TODO: Inject your TaskService using constructor injection (@RequiredArgsConstructor)
+
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/tasks")
 public class TaskController {
-  private final TaskService taskService;
 
-  @GetMapping
-  public List<TaskResponse> getAllTask(@RequestParam(required = false) Boolean completed) {
-    return taskService.findAll().stream()
-        .filter(t -> completed == null || completed.equals(t.getCompleted()))
-        .toList();
-  }
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Exercise 1: Task CRUD
+  // ═══════════════════════════════════════════════════════════════════════════
+  // All methods must return ResponseEntity<T>
 
-  @GetMapping("/{id}")
-  public TaskResponse getTaskById(@PathVariable Long id) {
-    return taskService.findById(id);
-  }
+  // TODO: GET /api/tasks → List<TaskResponse> (200)
 
-  @PostMapping
-  public ResponseEntity<TaskResponse> createTask(@RequestBody TaskRequest request) {
-    TaskResponse taskResponse = taskService.create(request.getTitle(), request.getDescription());
-    return ResponseEntity.status(HttpStatus.CREATED).body(taskResponse);
-  }
+  // TODO: GET /api/tasks/{id} → TaskResponse (200 / 404)
 
-  @PutMapping("/{id}")
-  public TaskResponse updateTask(@PathVariable Long id, @RequestBody TaskRequest request) {
-    return taskService.update(id, request.getTitle(), request.getDescription());
-  }
+  // TODO: POST /api/tasks → TaskResponse (201)
+  // Hint: ResponseEntity.status(HttpStatus.CREATED).body(...)
 
-  @PatchMapping("/{id}/complete")
-  public TaskResponse completeTask(@PathVariable Long id) {
-    return taskService.complete(id);
-  }
+  // TODO: PUT /api/tasks/{id} → TaskResponse (200 / 404)
 
-  @DeleteMapping("/{id}")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deleteTask(@PathVariable Long id) {
-    taskService.delete(id);
-  }
+  // TODO: DELETE /api/tasks/{id} → no body (204 / 404)
+  // Hint: ResponseEntity.noContent().build()
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Exercise 3: Custom @Query Endpoint
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // TODO: GET /api/tasks/overdue → List<TaskResponse> (200)
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Exercise 4: Specifications + Pagination
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // TODO: GET /api/tasks/filter?status=&priority=&title=&projectId=&dueBefore=&labelId=&page=&size=
+  //       → PaginationResponse<TaskResponse> (200)
+  // Hint: Use FilterTaskDto and Pagination as method parameters —
+  //       Spring binds query params to them automatically
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Exercise 5: Label Management on Tasks
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // TODO: PATCH /api/tasks/{id}/status?status= → TaskResponse (200 / 404)
+  // Hint: Use @RequestParam TaskStatus status
+
+  // TODO: POST /api/tasks/{taskId}/labels/{labelId} → TaskResponse (200 / 404)
+
+  // TODO: DELETE /api/tasks/{taskId}/labels/{labelId} → TaskResponse (200 / 404)
 }

@@ -1,43 +1,37 @@
 package com.chetraseng.sunrise_task_flow_api.repository;
 
 import com.chetraseng.sunrise_task_flow_api.model.TaskModel;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class TaskRepository {
-  private Map<Long, TaskModel> tasks = new ConcurrentHashMap<>();
-  private AtomicLong counter = new AtomicLong(0);
+public interface TaskRepository
+    extends JpaRepository<TaskModel, Long>, JpaSpecificationExecutor<TaskModel> {
 
-  public List<TaskModel> findAll() {
-    return tasks.values().stream().toList();
-  }
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Exercise 1: Derived Query Methods
+  // ═══════════════════════════════════════════════════════════════════════════
 
-  public TaskModel save(TaskModel task) {
-    if (task.getId() == null) {
-      long id = counter.incrementAndGet();
-      task.setId(id);
-    }
+  // TODO: findByProjectId(Long projectId) → List<TaskModel>
+  //   Used by: GET /api/projects/{id}/tasks
 
-    tasks.put(task.getId(), task);
+  // TODO: findByStatus(TaskStatus status) → List<TaskModel>
 
-    return task;
-  }
+  // TODO: findByPriority(Priority priority) → List<TaskModel>
 
-  public Boolean delete(Long id) {
-    if (tasks.containsKey(id)) {
-      tasks.remove(id);
-      return true;
-    }
+  // TODO: findByDueDateBefore(LocalDate date) → List<TaskModel>
 
-    return false;
-  }
+  // TODO: countByStatus(TaskStatus status) → long
+  //   Used by: GET /api/dashboard/summary
 
-  public Optional<TaskModel> findById(Long id) {
-    return Optional.ofNullable(tasks.get(id));
-  }
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Exercise 3: Custom @Query Methods
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // TODO: findOverdueTasks(LocalDate today) → List<TaskModel>
+  //   @Query — JPQL: dueDate < today AND status != DONE
+  //   Used by: GET /api/tasks/overdue
+  //   Hint:
+  //   @Query("SELECT t FROM TaskModel t WHERE t.dueDate < :today AND t.status <> com.chetraseng.sunrise_task_flow_api.model.TaskStatus.DONE")
 }
