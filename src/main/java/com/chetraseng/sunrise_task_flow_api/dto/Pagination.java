@@ -4,8 +4,8 @@ import lombok.Data;
 
 @Data
 public class Pagination {
-    private Integer size = 10;
-    private Integer page = 0;
-    private Long total;
-    private Integer totalPage;
+  private Integer size = 10;
+  private Integer page = 0;
+  private Long total;
+  private Integer totalPage;
 }
